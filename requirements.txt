@@ -1,0 +1,9 @@
+numpy
+opencv-python
+albumentations
+wandb
+hydra-core
+hydra-optuna-sweeper
+matplotlib
+seaborn
+tqdm
