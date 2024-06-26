@@ -4,11 +4,11 @@ from torchvision import models
 
 
 class TemplateModel(nn.Module):
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """
         Model class.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
     def forward(self, x):
         """

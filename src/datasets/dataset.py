@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 
 
 class TemplateDataset(Dataset):
-    def __init__(self, train, data_path, transforms, *args, **kwargs):
+    def __init__(self, train, data_path, transforms):
         """
         Dataset class.
         :param train: boolean flag to indicate if the dataset is for training or validation

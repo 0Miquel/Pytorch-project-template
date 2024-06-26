@@ -1,5 +1,4 @@
 from .base_trainer import BaseTrainer
-from src.metrics import MetricMonitor
 
 
 class TemplateTrainer(BaseTrainer):
@@ -12,8 +11,6 @@ class TemplateTrainer(BaseTrainer):
             optimizer=None,
             criterion=None,
             scheduler=None,
-            *args,
-            **kwargs
     ):
         """
         Trainer class.

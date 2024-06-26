@@ -47,7 +47,7 @@ class BaseTrainer:
 
         # MODEL
         self.model = model.to(self.device)
-        self.model = torch.compile(self.model)
+        # self.model = torch.compile(self.model)
 
         # OPTIMIZER
         self.optimizer = optimizer
@@ -112,9 +112,9 @@ class BaseTrainer:
             val_metrics = self.val_epoch(epoch)
 
             # upload metrics to wandb and save locally
-            train_metrics = {f"train/{k}": v for k, v in train_metrics.items()}
-            val_metrics = {f"val/{k}": v for k, v in val_metrics.items()}
-            logs = {"epoch": epoch, **train_metrics, **val_metrics}
+            train_logs = {f"train/{k}": v for k, v in train_metrics.items()}
+            val_logs = {f"val/{k}": v for k, v in val_metrics.items()}
+            logs = {"epoch": epoch, **train_logs, **val_logs}
             self.logger.upload_metrics(logs)
 
             # save model and early stop callbacks
