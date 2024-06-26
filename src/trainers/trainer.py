@@ -12,7 +12,6 @@ class TemplateTrainer(BaseTrainer):
             optimizer=None,
             criterion=None,
             scheduler=None,
-            test_dl=None,
             *args,
             **kwargs
     ):
@@ -33,19 +32,8 @@ class TemplateTrainer(BaseTrainer):
             config=config,
             train_dl=train_dl,
             val_dl=val_dl,
-            test_dl=test_dl,
             criterion=criterion,
             model=model,
             optimizer=optimizer,
             scheduler=scheduler
         )
-
-    def compute_metrics(self, metric_monitor: MetricMonitor, output, batch) -> dict:
-        """
-        Update metric_monitor with the metrics computed from output and batch.
-        :param metric_monitor:
-        :param output:
-        :param batch:
-        :return:
-        """
-        return metric_monitor.get_metrics()

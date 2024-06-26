@@ -17,9 +17,15 @@ from src.trainers import TemplateTrainer
 @hydra.main(version_base=None, config_path=".", config_name="config.yaml")
 def main(cfg):
     """
-    Load dataset and model from config and evaluate the model on the validation set.
+    Load dataset, model, optimizer, scheduler loss function and more from config and train the model here.
     """
     # Define transformations
+    transforms_train = A.Compose([
+        A.Resize(width=64, height=64),
+        A.HorizontalFlip(p=0.5),
+        A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ToTensorV2(),
+    ])
     transforms_val = A.Compose([
         A.Resize(width=64, height=64),
         A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -27,23 +33,37 @@ def main(cfg):
     ])
 
     # Create the dataset
+    train_dataset = TemplateDataset(train=True, data_path=cfg.data_path, transforms=transforms_train)
     valid_dataset = TemplateDataset(train=False, data_path=cfg.data_path, transforms=transforms_val)
 
     # Create the dataloaders
+    train_dl = torch.utils.data.DataLoader(train_dataset, batch_size=cfg.batch_size, shuffle=True)
     val_dl = torch.utils.data.DataLoader(valid_dataset, batch_size=cfg.batch_size, shuffle=True)
 
     # Create the model
     model = TemplateModel(n_classes=cfg.n_classes)
 
+    # Instantiate the loss function
+    criterion = nn.CrossEntropyLoss()
+
+    # Instantiate the optimizer and scheduler
+    optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.lr)
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=cfg.max_lr,
+                                                    total_steps=cfg.n_epochs * len(train_dl))
+
     # Initialize trainer
     trainer = TemplateTrainer(
         config=cfg,
+        train_dl=train_dl,
         val_dl=val_dl,
+        criterion=criterion,
         model=model,
+        optimizer=optimizer,
+        scheduler=scheduler,
     )
 
-    # Start training
-    trainer.evaluate()
+    # Start evaluation
+    trainer.evaluate(cfg.model_ckpt)
 
 
 if __name__ == "__main__":

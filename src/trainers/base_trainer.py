@@ -20,10 +20,9 @@ class BaseTrainer:
             train_dl,
             val_dl,
             model,
-            optimizer=None,
+            optimizer,
             criterion=None,
             scheduler=None,
-            test_dl=None,
     ):
         set_random_seed(42)
 
@@ -42,7 +41,6 @@ class BaseTrainer:
         # DATASET
         self.train_dl = train_dl
         self.val_dl = val_dl
-        self.test_dl = test_dl
 
         # LOSS FUNCTION
         self.criterion = criterion
@@ -116,7 +114,7 @@ class BaseTrainer:
             # upload metrics to wandb and save locally
             train_metrics = {f"train/{k}": v for k, v in train_metrics.items()}
             val_metrics = {f"val/{k}": v for k, v in val_metrics.items()}
-            logs = {**train_metrics, **val_metrics, "epoch": epoch}
+            logs = {"epoch": epoch, **train_metrics, **val_metrics}
             self.logger.upload_metrics(logs)
 
             # save model and early stop callbacks
@@ -124,6 +122,7 @@ class BaseTrainer:
             early_stop = self.early_stopping(epoch, val_metrics)
             if early_stop:
                 break
+
         # evaluate the best model
         self.evaluate()
         return self.model_checkpoint.best_metric
@@ -136,13 +135,6 @@ class BaseTrainer:
             raise RuntimeError("`criterion` should not be None or you may need to reimplement compute_loss")
         return self.criterion(output, batch["y"])
 
-    def compute_metrics(self, metric_monitor: MetricMonitor, output, batch) -> dict:
-        """
-        Update metric_monitor with the metrics computed from output and batch and
-        return the metrics as a dictionary.
-        """
-        return metric_monitor.get_metrics()
-
     def evaluate(self, model_checkpoint=None):
         if model_checkpoint is None:
             print("Loading best model from training...")
@@ -152,8 +144,8 @@ class BaseTrainer:
             self.model_checkpoint.load_from_pretrained(self.model, model_checkpoint)
 
         print(f"Evaluating model on validation set...")
-        val_metrics = self.val_epoch(epoch=0)
-        logs = {f"test/{k}": v for k, v in val_metrics.items()}
+        test_metrics = self.val_epoch(epoch=0)
+        logs = {f"test/{k}": v for k, v in test_metrics.items()}
         self.logger.upload_metrics(logs)
 
         print(f"Generating media...")
@@ -161,6 +153,13 @@ class BaseTrainer:
         self.logger.upload_media(figures)
 
         self.logger.finish()
+
+    def compute_metrics(self, metric_monitor: MetricMonitor, output, batch) -> dict:
+        """
+        Update metric_monitor with the metrics computed from output and batch and
+        return the metrics as a dictionary.
+        """
+        return metric_monitor.get_metrics()
 
     def generate_media(self) -> Dict[str, Figure]:
         """
