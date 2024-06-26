@@ -9,7 +9,6 @@ import csv
 class Logger:
     def __init__(self, cfg):
         self.results_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
-        self.start_time = time.time()
         self.cfg = cfg
         if self.cfg.wandb is not None:
             self.project_name = self.cfg.wandb
@@ -59,8 +58,5 @@ class Logger:
             writer.writerow(logs)
 
     def finish(self):
-        time_elapsed = time.time() - self.start_time
-        print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
-
         if self.project_name is not None:
             self.run.finish()
