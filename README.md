@@ -17,10 +17,12 @@ Pytorch-project-template
 │   └── ...
 │
 └── tools                       # scripts to run the experiments
-    ├── train.py                # and the configuration files 
-    ├── evaluate.py             # for the experiments
-    ├── ...
-    └── cfgs                    
-        └── config.yaml         
+    ├── train.py                 
+    ├── evaluate.py             
+    ├── cfgs                    # configuration files 
+    │   ├── config.yaml 
+    │   └── ...
+    └── outputs                 # output of the experiments
+        └── ...                
 ```
 The source code packages contain a template class to build your own models, datasets, etc.
