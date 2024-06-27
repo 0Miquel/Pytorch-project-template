@@ -8,7 +8,7 @@ class TemplateTrainer(BaseTrainer):
             train_dl,
             val_dl,
             model,
-            optimizer=None,
+            optimizer,
             criterion=None,
             scheduler=None,
     ):
