@@ -21,9 +21,6 @@ class TemplateTrainer(BaseTrainer):
         :param optimizer:
         :param criterion:
         :param scheduler:
-        :param test_dl:
-        :param args:
-        :param kwargs:
         """
         super().__init__(
             config=config,
