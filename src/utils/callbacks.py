@@ -75,7 +75,3 @@ class ModelCheckpoint:
     def load_best_model(self, model):
         filename = os.path.join(self.filepath, 'best.pt')
         model.load_state_dict(torch.load(filename))
-
-    @staticmethod
-    def load_from_pretrained(model, path):
-        model.load_state_dict(torch.load(path))
