@@ -5,10 +5,11 @@ class TemplateTrainer(BaseTrainer):
     def __init__(
             self,
             config,
-            train_dl,
-            val_dl,
             model,
-            optimizer,
+            train_dl=None,
+            val_dl=None,
+            test_dl=None,
+            optimizer=None,
             criterion=None,
             scheduler=None,
     ):
@@ -26,6 +27,7 @@ class TemplateTrainer(BaseTrainer):
             config=config,
             train_dl=train_dl,
             val_dl=val_dl,
+            test_dl=test_dl,
             criterion=criterion,
             model=model,
             optimizer=optimizer,

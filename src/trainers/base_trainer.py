@@ -17,30 +17,39 @@ class BaseTrainer:
     def __init__(
             self,
             config,
-            train_dl,
-            val_dl,
             model,
-            optimizer,
+            train_dl=None,
+            val_dl=None,
+            test_dl=None,
+            optimizer=None,
             criterion=None,
             scheduler=None,
     ):
         set_random_seed(42)
 
         self.config = config
-        self.n_epochs = config.n_epochs
         self.device = config.device
-        self.early_stopping = EarlyStopping(
-            patience=config.patience,
-            min_delta=config.min_delta,
-            monitor=config.monitor,
-            max_mode=config.max_mode
-        )
-        self.model_checkpoint = ModelCheckpoint(monitor=config.monitor, max_mode=config.max_mode)
         self.logger = Logger(config)
+
+        if train_dl is not None:
+            # TRAINING
+            self.n_epochs = config.n_epochs
+            self.early_stopping = EarlyStopping(
+                patience=config.patience,
+                min_delta=config.min_delta,
+                monitor=config.monitor,
+                max_mode=config.max_mode
+            )
+            self.model_checkpoint = ModelCheckpoint(monitor=config.monitor, max_mode=config.max_mode)
+
+            # OPTIMIZER
+            self.optimizer = optimizer
+            self.scheduler = scheduler
 
         # DATASET
         self.train_dl = train_dl
         self.val_dl = val_dl
+        self.test_dl = test_dl if test_dl is not None else val_dl
 
         # LOSS FUNCTION
         self.criterion = criterion
@@ -48,10 +57,6 @@ class BaseTrainer:
         # MODEL
         self.model = model.to(self.device)
         # self.model = torch.compile(self.model)
-
-        # OPTIMIZER
-        self.optimizer = optimizer
-        self.scheduler = scheduler
 
     def train_epoch(self, epoch):
         self.model.train()
@@ -106,6 +111,29 @@ class BaseTrainer:
 
         return metrics
 
+    @torch.no_grad()
+    def test(self):
+        self.model.eval()
+        metric_monitor = MetricMonitor()
+
+        # use tqdm to track progress
+        with tqdm(self.test_dl, unit="batch") as tepoch:
+            tepoch.set_description(f"Test")
+            # Iterate over data.
+            for step, batch in enumerate(tepoch):
+                batch = load_batch_to_device(batch, self.device)
+                # predict
+                output = self.predict(self.model, batch)
+                # loss
+                if self.criterion is not None:
+                    loss = self.compute_loss(output, batch)
+                    # update metrics and loss
+                    metric_monitor.update("loss", loss.item())
+                metrics = self.compute_metrics(metric_monitor, output, batch)
+                tepoch.set_postfix(**metrics)
+
+        return metrics
+
     def fit(self):
         for epoch in range(self.n_epochs):
             train_metrics = self.train_epoch(epoch)
@@ -124,6 +152,8 @@ class BaseTrainer:
                 break
 
         # evaluate the best model
+        print("Loading best model from training...")
+        self.model_checkpoint.load_best_model(self.model)
         self.evaluate()
         return self.model_checkpoint.best_metric
 
@@ -135,16 +165,8 @@ class BaseTrainer:
             raise RuntimeError("`criterion` should not be None or you may need to reimplement compute_loss")
         return self.criterion(output, batch["y"])
 
-    def evaluate(self, model_checkpoint=None):
-        if model_checkpoint is None:
-            print("Loading best model from training...")
-            self.model_checkpoint.load_best_model(self.model)
-        else:
-            print(f"Loading model from checkpoint {model_checkpoint}...")
-            self.model_checkpoint.load_from_pretrained(self.model, model_checkpoint)
-
-        print(f"Evaluating model on validation set...")
-        test_metrics = self.val_epoch(epoch=0)
+    def evaluate(self):
+        test_metrics = self.test()
         logs = {f"test/{k}": v for k, v in test_metrics.items()}
         self.logger.upload_metrics(logs)
 
