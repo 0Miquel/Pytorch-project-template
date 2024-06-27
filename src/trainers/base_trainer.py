@@ -149,6 +149,7 @@ class BaseTrainer:
             self.model_checkpoint(self.model, val_metrics)
             early_stop = self.early_stopping(epoch, val_metrics)
             if early_stop:
+                print("Early stopping triggered.")
                 break
 
         # evaluate the best model
