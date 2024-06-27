@@ -14,7 +14,7 @@ from src.trainers import TemplateTrainer
 # from src.optimizers import ...
 
 
-@hydra.main(version_base=None, config_path=".", config_name="config.yaml")
+@hydra.main(version_base=None, config_path="cfgs", config_name="config.yaml")
 def main(cfg):
     """
     Load dataset, model, optimizer, scheduler loss function and more from config and train the model here.
