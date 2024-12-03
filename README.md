@@ -10,19 +10,17 @@ The template is structured in the following way:
 ```
 Pytorch-project-template
 ├── requirements.txt            # all the dependencies needed
-│
 ├── src                         # source code of the project
-│   ├── datasets                # it contains the source code of 
-│   ├── models                  # all the packages of the project
+│   ├── datasets                
+│   ├── models                  
 │   └── ...
-│
-└── tools                       # scripts to run the experiments
-    ├── train.py                 
-    ├── evaluate.py             
-    ├── cfgs                    # configuration files 
-    │   ├── config.yaml 
-    │   └── ...
-    └── outputs                 # output of the experiments
-        └── ...                
+├── cfgs                        # folder with the configurations for the experiments
+│   ├── config.py               # check in config.py the default configuration
+│   └── ... 
+├── data                        # folder with the datasets
+│   └── ...
+├── evaluate.py                 # script to evaluate
+└── train.py                    # script to train
+             
 ```
 The source code packages contain a template class to build your own models, datasets, etc.
