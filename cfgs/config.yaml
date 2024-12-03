@@ -3,25 +3,6 @@
 # Dataset config
 data_path: /media/miquel/Pytorch-training-toolkit/data/MNIST
 
-# Early stopping and model checkpoint config
-patience: 10000
-min_delta: 0.0
-max_mode: False
-monitor: loss
-
-# Model config
-n_classes: 10
-
-# Trainer config
-batch_size: 64
-n_epochs: 1
-device: cuda
-wandb: null
-
-# Optimizer config
-lr: 0.001
-max_lr: 0.01
-
 
 # Hyperparameter sweeper settings
 defaults:

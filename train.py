@@ -1,5 +1,3 @@
-import hydra
-
 # Import some packages for off-the-shelf modules
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -13,9 +11,15 @@ from src.trainers import TemplateTrainer
 # from src.losses import ...
 # from src.optimizers import ...
 
+from cfgs.config import CFG
+import hydra
+from hydra.core.config_store import ConfigStore
+cs = ConfigStore.instance()
+cs.store(name="config", node=CFG)
 
-@hydra.main(version_base=None, config_path="cfgs", config_name="config.yaml")
-def main(cfg):
+
+@hydra.main(version_base=None, config_path="cfgs", config_name="config")
+def main(cfg: CFG):
     """
     Load dataset, model, optimizer, scheduler loss function and more from config and train the model here.
     """
