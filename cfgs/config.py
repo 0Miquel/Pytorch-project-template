@@ -7,7 +7,7 @@ class CFG:
     Default configuration, overwritten by the .yaml file defined in folder cfgs/
     """
     # Dataset config
-    data_path: str = None
+    data_path: str = ""
 
     # Early stopping and model checkpoint config
     patience: int = 10000
@@ -22,7 +22,7 @@ class CFG:
     batch_size: int = 64
     n_epochs: int = 1
     device: str = "cuda"
-    wandb: str =  None
+    wandb: str =  ""
 
     # Optimizer config
     lr: float = 0.001

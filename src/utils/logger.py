@@ -11,7 +11,7 @@ class Logger:
         self.results_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
         self.start_time = time.time()
         self.cfg = cfg
-        if self.cfg.wandb is not None:
+        if self.cfg.wandb:
             self.project_name = self.cfg.wandb
             cfg_dict = OmegaConf.to_object(cfg)
             self.run = wandb.init(project=self.project_name, config=cfg_dict)

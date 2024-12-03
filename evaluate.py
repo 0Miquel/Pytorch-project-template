@@ -12,17 +12,15 @@ from src.trainers import TemplateTrainer
 # from src.optimizers import ...
 
 from cfgs.config import CFG
+from omegaconf import DictConfig, OmegaConf
 import hydra
-from hydra.core.config_store import ConfigStore
-cs = ConfigStore.instance()
-cs.store(name="config", node=CFG)
 
 
-@hydra.main(version_base=None, config_path="cfgs", config_name="config.yaml")
-def main(cfg: CFG):
-    """
-    Load dataset, model, optimizer, scheduler loss function and more from config and train the model here.
-    """
+@hydra.main(version_base=None, config_path="cfgs", config_name="config")
+def main(cfg: DictConfig):
+    default_cfg = OmegaConf.structured(CFG)
+    cfg = OmegaConf.merge(default_cfg, cfg)
+
     # Define transformations
     transforms_test = A.Compose([
         A.Resize(width=64, height=64),
