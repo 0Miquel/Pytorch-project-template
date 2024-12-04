@@ -31,20 +31,15 @@ class BaseTrainer:
         self.device = config.device
         self.logger = Logger(config)
 
-        if train_dl is not None:
-            # TRAINING
-            self.n_epochs = config.n_epochs
-            self.early_stopping = EarlyStopping(
-                patience=config.patience,
-                min_delta=config.min_delta,
-                monitor=config.monitor,
-                max_mode=config.max_mode
-            )
-            self.model_checkpoint = ModelCheckpoint(monitor=config.monitor, max_mode=config.max_mode)
-
-            # OPTIMIZER
-            self.optimizer = optimizer
-            self.scheduler = scheduler
+        # TRAINING
+        self.n_epochs = config.n_epochs
+        self.early_stopping = EarlyStopping(
+            patience=config.patience,
+            min_delta=config.min_delta,
+            monitor=config.monitor,
+            max_mode=config.max_mode
+        )
+        self.model_checkpoint = ModelCheckpoint(monitor=config.monitor, max_mode=config.max_mode)
 
         # DATASET
         self.train_dl = train_dl
@@ -56,7 +51,11 @@ class BaseTrainer:
 
         # MODEL
         self.model = model.to(self.device)
-        # self.model = torch.compile(self.model)
+        self.model = torch.compile(self.model)
+
+        # OPTIMIZER
+        self.optimizer = optimizer
+        self.scheduler = scheduler
 
     def train_epoch(self, epoch):
         self.model.train()
