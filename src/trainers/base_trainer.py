@@ -24,8 +24,10 @@ class BaseTrainer:
             optimizer=None,
             criterion=None,
             scheduler=None,
+            seed=42,
     ):
-        set_random_seed(42)
+        self.seed = seed
+        set_random_seed(self.seed)
 
         self.config = config
         self.device = config.device

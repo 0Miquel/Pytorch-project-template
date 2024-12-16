@@ -12,6 +12,7 @@ class TemplateTrainer(BaseTrainer):
             optimizer=None,
             criterion=None,
             scheduler=None,
+            seed=42,
     ):
         """
         Trainer class.
@@ -31,5 +32,6 @@ class TemplateTrainer(BaseTrainer):
             criterion=criterion,
             model=model,
             optimizer=optimizer,
-            scheduler=scheduler
+            scheduler=scheduler,
+            seed=seed,
         )
