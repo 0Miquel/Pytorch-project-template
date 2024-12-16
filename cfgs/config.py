@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Union
 
 
 @dataclass
@@ -6,6 +7,10 @@ class CFG:
     """
     Default configuration, overwritten by the .yaml file defined in folder cfgs/
     """
+    # Wandb config
+    project_name: Union[str, None] =  None
+    entity: Union[str, None] = None
+
     # Dataset config
     data_path: str = ""
 
@@ -22,7 +27,6 @@ class CFG:
     batch_size: int = 64
     n_epochs: int = 1
     device: str = "cuda"
-    wandb: str =  ""
 
     # Optimizer config
     lr: float = 0.001
